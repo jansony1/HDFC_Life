@@ -137,16 +137,17 @@ func (t *HDFC) UpdateStatus(stub shim.ChaincodeStubInterface, args []string) ([]
 	dob := row.Columns[6].GetString_()
 	age := row.Columns[7].GetString_()
 	martialStatus := row.Columns[8].GetString_()
-	motherName := row.Columns[9].GetString_()
-	nationality := row.Columns[10].GetString_()
-	residentialStatus := row.Columns[11].GetString_()
-	placeOfBirth := row.Columns[12].GetString_()
-	panNumber := row.Columns[13].GetString_()
-	aadharNumber := row.Columns[14].GetString_()
-	educationalQualification := row.Columns[15].GetString_()
-	politicallyExposed := row.Columns[16].GetString_()
-	disablePersonPolicy := row.Columns[17].GetString_()
-	anyCriminalProceeding := row.Columns[18].GetString_()
+	fatherName := row.Columns[9].GetString_()
+	motherName := row.Columns[10].GetString_()
+	nationality := row.Columns[11].GetString_()
+	residentialStatus := row.Columns[12].GetString_()
+	placeOfBirth := row.Columns[13].GetString_()
+	panNumber := row.Columns[14].GetString_()
+	aadharNumber := row.Columns[15].GetString_()
+	educationalQualification := row.Columns[16].GetString_()
+	politicallyExposed := row.Columns[17].GetString_()
+	disablePersonPolicy := row.Columns[18].GetString_()
+	anyCriminalProceeding := row.Columns[19].GetString_()
 	
 	
 	_, err = stub.InsertRow(
@@ -162,6 +163,7 @@ func (t *HDFC) UpdateStatus(stub shim.ChaincodeStubInterface, args []string) ([]
 				&shim.Column{Value: &shim.Column_String_{String_: dob}},
 				&shim.Column{Value: &shim.Column_String_{String_: age}},
 				&shim.Column{Value: &shim.Column_String_{String_: martialStatus}},
+				&shim.Column{Value: &shim.Column_String_{String_: fatherName}},
 				&shim.Column{Value: &shim.Column_String_{String_: motherName}},
 				&shim.Column{Value: &shim.Column_String_{String_: nationality}},
 				&shim.Column{Value: &shim.Column_String_{String_: residentialStatus}},
@@ -199,16 +201,17 @@ func (t *HDFC) Invoke(stub shim.ChaincodeStubInterface, function string, args []
 		dob := args[6]
 		age := args[7]
 		martialStatus := args[8]
-		motherName := args[9]
-		nationality := args[10]
-		residentialStatus := args[11]
-		placeOfBirth := args[12]
-		panNumber := args[13]
-		aadharNumber := args[14]
-		educationalQualification := args[15]
-		politicallyExposed := args[16]
-		disablePersonPolicy := args[17]
-		anyCriminalProceeding := args[18]
+		fatherName := args[9]
+		motherName := args[10]
+		nationality := args[11]
+		residentialStatus := args[12]
+		placeOfBirth := args[13]
+		panNumber := args[14]
+		aadharNumber := args[15]
+		educationalQualification := args[16]
+		politicallyExposed := args[17]
+		disablePersonPolicy := args[18]
+		anyCriminalProceeding := args[19]
 
 		// Insert a row
 		ok, err := stub.InsertRow("ApplicationTable", shim.Row{
@@ -222,6 +225,7 @@ func (t *HDFC) Invoke(stub shim.ChaincodeStubInterface, function string, args []
 				&shim.Column{Value: &shim.Column_String_{String_: dob}},
 				&shim.Column{Value: &shim.Column_String_{String_: age}},
 				&shim.Column{Value: &shim.Column_String_{String_: martialStatus}},
+				&shim.Column{Value: &shim.Column_String_{String_: fatherName}},
 				&shim.Column{Value: &shim.Column_String_{String_: motherName}},
 				&shim.Column{Value: &shim.Column_String_{String_: nationality}},
 				&shim.Column{Value: &shim.Column_String_{String_: residentialStatus}},
