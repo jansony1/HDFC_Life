@@ -21,14 +21,14 @@ type HDFC struct {
 func (t *HDFC) Init(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 
 	// Check if table already exists
-//	_, err := stub.GetTable("ApplicationTable")
-//	if err == nil {
+	_, err := stub.GetTable("ApplicationTable")
+	if err == nil {
 		// Table already exists; do not recreate
-//		return nil, nil
-//	}
+		return nil, nil
+	}
 
 	// Create application Table
-	err := stub.CreateTable("ApplicationTable", []*shim.ColumnDefinition{
+	err = stub.CreateTable("ApplicationTable", []*shim.ColumnDefinition{
 		&shim.ColumnDefinition{Name: "applicationId", Type: shim.ColumnDefinition_STRING, Key: true},
 		&shim.ColumnDefinition{Name: "status", Type: shim.ColumnDefinition_STRING, Key: false},
 		&shim.ColumnDefinition{Name: "title", Type: shim.ColumnDefinition_STRING, Key: false},
@@ -188,7 +188,7 @@ func (t *HDFC) UpdateStatus(stub shim.ChaincodeStubInterface, args []string) ([]
 func (t *HDFC) Invoke(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 
 	if function == "submitApplication" {
-		if len(args) != 19 {
+		if len(args) != 20 {
 			return nil, fmt.Errorf("Incorrect number of arguments. Expecting 19. Got: %d.", len(args))
 		}
 
