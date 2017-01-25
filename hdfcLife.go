@@ -19,14 +19,14 @@ type HDFC struct {
 
 // Init initializes the smart contracts
 func (t *HDFC) Init(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
-/*
+
 	// Check if table already exists
-	_, err := stub.GetTable("ApplicationTable")
-	if err == nil {
+//	_, err := stub.GetTable("ApplicationTable")
+//	if err == nil {
 		// Table already exists; do not recreate
-		return nil, nil
-	}
-*/
+//		return nil, nil
+//	}
+
 	// Create application Table
 	err = stub.CreateTable("ApplicationTable", []*shim.ColumnDefinition{
 		&shim.ColumnDefinition{Name: "applicationId", Type: shim.ColumnDefinition_STRING, Key: true},
