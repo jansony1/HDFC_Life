@@ -28,7 +28,7 @@ func (t *HDFC) Init(stub shim.ChaincodeStubInterface, function string, args []st
 //	}
 
 	// Create application Table
-	err = stub.CreateTable("ApplicationTable", []*shim.ColumnDefinition{
+	err := stub.CreateTable("ApplicationTable", []*shim.ColumnDefinition{
 		&shim.ColumnDefinition{Name: "applicationId", Type: shim.ColumnDefinition_STRING, Key: true},
 		&shim.ColumnDefinition{Name: "status", Type: shim.ColumnDefinition_STRING, Key: false},
 		&shim.ColumnDefinition{Name: "title", Type: shim.ColumnDefinition_STRING, Key: false},
