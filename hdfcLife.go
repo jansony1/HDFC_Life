@@ -89,6 +89,97 @@ func (t *HDFC) getNumApplications(stub shim.ChaincodeStubInterface, args []strin
 }
 
 
+func (t *HDFC) UpdateStatus(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+
+	if len(args) != 2 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 2.")
+	}
+
+	applicationId := args[0]
+	newStatus := args[1]
+
+	// Get the row pertaining to this applicationId
+	var columns []shim.Column
+	col1 := shim.Column{Value: &shim.Column_String_{String_: applicationId}}
+	columns = append(columns, col1)
+
+	row, err := stub.GetRow("ApplicationTable", columns)
+	if err != nil {
+		return nil, fmt.Errorf("Error: Failed retrieving application with applicationId %s. Error %s", applicationId, err.Error())
+	}
+
+	// GetRows returns empty message if key does not exist
+	if len(row.Columns) == 0 {
+		return nil, nil
+	}
+
+
+	//currStatus := row.Columns[1].GetString_()
+
+
+
+	//End- Check that the currentStatus to newStatus transition is accurate
+
+	err = stub.DeleteRow(
+		"ApplicationTable",
+		columns,
+	)
+	if err != nil {
+		return nil, errors.New("Failed deleting row.")
+	}
+
+	//applicationId := row.Columns[0].GetString_()
+	status := newStatus
+	title := row.Columns[2].GetString_()
+	firstName := row.Columns[3].GetString_()
+	lastName := row.Columns[4].GetString_()
+	gender := row.Columns[5].GetString_()
+	dob := row.Columns[6].GetString_()
+	age := row.Columns[7].GetString_()
+	martialStatus := row.Columns[8].GetString_()
+	motherName := row.Columns[9].GetString_()
+	nationality := row.Columns[10].GetString_()
+	residentialStatus := row.Columns[11].GetString_()
+	placeOfBirth := row.Columns[12].GetString_()
+	panNumber := row.Columns[13].GetString_()
+	aadharNumber := row.Columns[14].GetString_()
+	educationalQualification := row.Columns[15].GetString_()
+	politicallyExposed := row.Columns[16].GetString_()
+	disablePersonPolicy := row.Columns[17].GetString_()
+	anyCriminalProceeding := row.Columns[18].GetString_()
+	
+	
+	_, err = stub.InsertRow(
+		"ApplicationTable",
+		shim.Row{
+			Columns: []*shim.Column{
+				&shim.Column{Value: &shim.Column_String_{String_: applicationId}},
+				&shim.Column{Value: &shim.Column_String_{String_: status}},
+				&shim.Column{Value: &shim.Column_String_{String_: title}},
+				&shim.Column{Value: &shim.Column_String_{String_: firstName}},
+				&shim.Column{Value: &shim.Column_String_{String_: lastName}},
+				&shim.Column{Value: &shim.Column_String_{String_: gender}},
+				&shim.Column{Value: &shim.Column_String_{String_: dob}},
+				&shim.Column{Value: &shim.Column_String_{String_: age}},
+				&shim.Column{Value: &shim.Column_String_{String_: martialStatus}},
+				&shim.Column{Value: &shim.Column_String_{String_: motherName}},
+				&shim.Column{Value: &shim.Column_String_{String_: nationality}},
+				&shim.Column{Value: &shim.Column_String_{String_: residentialStatus}},
+				&shim.Column{Value: &shim.Column_String_{String_: placeOfBirth}},
+				&shim.Column{Value: &shim.Column_String_{String_: panNumber}},
+				&shim.Column{Value: &shim.Column_String_{String_: aadharNumber}},
+				&shim.Column{Value: &shim.Column_String_{String_: educationalQualification}},
+				&shim.Column{Value: &shim.Column_String_{String_: politicallyExposed}},
+				&shim.Column{Value: &shim.Column_String_{String_: disablePersonPolicy}},
+				&shim.Column{Value: &shim.Column_String_{String_: anyCriminalProceeding}}},
+		})
+	if err != nil {
+		return nil, errors.New("Failed inserting row.")
+	}
+
+	return nil, nil
+
+}
 
 
 // Invoke invokes the chaincode
@@ -152,7 +243,8 @@ func (t *HDFC) Invoke(stub shim.ChaincodeStubInterface, function string, args []
 
 		return nil, err
 	} else if function == "updateApplicationStatus" { 
-		//return UpdateStatus(stub, args)
+		t := HDFC{}
+		return t.UpdateStatus(stub, args)
 	} 
 
 	return nil, errors.New("Invalid invoke function name.")
