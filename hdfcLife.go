@@ -183,6 +183,65 @@ func (t *HDFC) UpdateStatus(stub shim.ChaincodeStubInterface, args []string) ([]
 
 }
 
+func (t *HDFC) getApplication(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+
+	if len(args) != 1 {
+		jsonResp := "{\"Error\":\"Incorrect number of arguments. Expecting applicationid to query " + "\"}"
+		return nil, errors.New(jsonResp)
+	}
+
+	applicationId := args[0]
+	
+
+	// Get the row pertaining to this applicationId
+	var columns []shim.Column
+	col1 := shim.Column{Value: &shim.Column_String_{String_: applicationId}}
+	columns = append(columns, col1)
+
+	row, err := stub.GetRow("ApplicationTable", columns)
+	if err != nil {
+		jsonResp := "{\"Error\":\"Failed to get the data for the application " + applicationId + "\"}"
+		return nil, errors.New(jsonResp)
+	}
+
+	// GetRows returns empty message if key does not exist
+	if len(row.Columns) == 0 {
+		jsonResp := "{\"Error\":\"Failed to get the data for the application " + applicationId + "\"}"
+		return nil, errors.New(jsonResp)
+	}
+
+	//applicationId := row.Columns[0].GetString_()
+	status := row.Columns[1].GetString_()
+	title := row.Columns[2].GetString_()
+	firstName := row.Columns[3].GetString_()
+	lastName := row.Columns[4].GetString_()
+	gender := row.Columns[5].GetString_()
+	dob := row.Columns[6].GetString_()
+	age := row.Columns[7].GetString_()
+	martialStatus := row.Columns[8].GetString_()
+	fatherName := row.Columns[9].GetString_()
+	motherName := row.Columns[10].GetString_()
+	nationality := row.Columns[11].GetString_()
+	residentialStatus := row.Columns[12].GetString_()
+	placeOfBirth := row.Columns[13].GetString_()
+	panNumber := row.Columns[14].GetString_()
+	aadharNumber := row.Columns[15].GetString_()
+	educationalQualification := row.Columns[16].GetString_()
+	politicallyExposed := row.Columns[17].GetString_()
+	disablePersonPolicy := row.Columns[18].GetString_()
+	anyCriminalProceeding := row.Columns[19].GetString_()
+	
+	jsonResp := "{\"applicationId\":\"" + applicationId + "\",\"status\":\"" + status + "\",\"title\":\"" + title + "\",\"firstName\":\"" + firstName + "\",\"lastName\":\"" + lastName + "\",\"gender\":\"" + gender + "\",\"dob\":\"" + dob + "\",\"age\":\"" + age + "\",\"martialStatus\":\"" + martialStatus + "\",\"fatherName\":\"" + fatherName + "\",\"motherName\":\"" + motherName + "\",\"nationality\":\"" + nationality + "\",\"residentialStatus\":\"" + residentialStatus + "\",\"placeOfBirth\":\"" + placeOfBirth + "\",\"panNumber\":\"" + panNumber + "\",\"aadharNumber\":\"" + aadharNumber + "\",\"educationalQualification\":\"" + educationalQualification + "\",\"politicallyExposed\":\"" + politicallyExposed + "\",\"disablePersonPolicy\":\"" + disablePersonPolicy + "\",\"anyCriminalProceeding\":\"" + anyCriminalProceeding + "\"}"
+	
+	fmt.Printf("Query Response:%s\n", jsonResp)
+	
+	var buf []byte
+	
+	buf, err = json.Marshal(jsonResp)
+		
+	return buf, nil
+
+}
 
 // Invoke invokes the chaincode
 func (t *HDFC) Invoke(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
@@ -256,8 +315,15 @@ func (t *HDFC) Invoke(stub shim.ChaincodeStubInterface, function string, args []
 }
 
 func (t *HDFC) Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
-	type Status struct {
-		Status string
+
+	if function == "getApplication" {
+		if len(args) != 1 {
+			jsonResp := "{\"Error\":\"Incorrect number of arguments. Expecting applicationid to query " + "\"}"
+			return nil, errors.New(jsonResp)
+		}
+
+		t := HDFC{}
+		return t.getApplication(stub, args)		
 	}
 	return nil, nil
 }
