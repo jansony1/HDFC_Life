@@ -78,14 +78,18 @@ func (t *HDFC) getNumApplications(stub shim.ChaincodeStubInterface, args []strin
 		}
 	}
 
-	type count struct {
-		NumContracts int
-	}
+//	type count struct {
+//		NumContracts int
+//	}
 
-	var c count
-	c.NumContracts = contractCounter
+//	var c count
+//	c.NumContracts = contractCounter
 
-	return json.Marshal(c)
+	var buf []byte
+	
+	buf, err = json.Marshal(contractCounter)
+	
+	return buf, nil
 }
 
 
@@ -365,7 +369,11 @@ func (t *HDFC) Query(stub shim.ChaincodeStubInterface, function string, args []s
 	}else if function == "listAllApplication" { 
 		t := HDFC{}
 		return t.listAllApplication(stub, args)
+	}else if function == "getNumApplications" { 
+		t := HDFC{}
+		return t.getNumApplications(stub, args)
 	}
+	
 	return nil, nil
 }
 
