@@ -186,8 +186,7 @@ func (t *HDFC) UpdateStatus(stub shim.ChaincodeStubInterface, args []string) ([]
 func (t *HDFC) getApplication(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 
 	if len(args) != 1 {
-		jsonResp := "{\"Error\":\"Incorrect number of arguments. Expecting applicationid to query " + "\"}"
-		return nil, errors.New(jsonResp)
+		return nil, errors.New("Incorrect number of arguments. Expecting applicationid to query")
 	}
 
 	applicationId := args[0]
@@ -242,6 +241,46 @@ func (t *HDFC) getApplication(stub shim.ChaincodeStubInterface, args []string) (
 	return buf, nil
 
 }
+
+
+
+func (t *HDFC) listAllApplication(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	if len(args) != 0 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 0.")
+	}
+
+	var columns []shim.Column
+
+	rows, err := stub.GetRows("ApplicationTable", columns)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to retrieve row")
+	}
+
+	var applicationId, status, jsonResp string
+	jsonResp = "{"
+	for row := range rows {
+		applicationId = row.Columns[0].GetString_()
+		status = row.Columns[1].GetString_()
+		jsonResp = jsonResp + applicationId + ":" + status + ","
+	}
+	jsonResp = jsonResp[:len(jsonResp)-1] + "}"
+	
+	fmt.Printf("Query Response:%s\n", jsonResp)
+	
+	var buf []byte
+	
+	buf, err = json.Marshal(jsonResp)
+		
+	return buf, nil 
+
+}
+
+
+
+
+
+
+
 
 // Invoke invokes the chaincode
 func (t *HDFC) Invoke(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
@@ -318,12 +357,14 @@ func (t *HDFC) Query(stub shim.ChaincodeStubInterface, function string, args []s
 
 	if function == "getApplication" {
 		if len(args) != 1 {
-			jsonResp := "{\"Error\":\"Incorrect number of arguments. Expecting applicationid to query " + "\"}"
-			return nil, errors.New(jsonResp)
+			return nil, errors.New("Incorrect number of arguments. Expecting applicationid to query")
 		}
 
 		t := HDFC{}
 		return t.getApplication(stub, args)		
+	}else if function == "listAllApplication" { 
+		t := HDFC{}
+		return t.listAllApplication(stub, args)
 	}
 	return nil, nil
 }
