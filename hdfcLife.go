@@ -40,6 +40,9 @@ type Application struct{
 	PoliticallyExposed string `json:"politicallyExposed"`
 	DisablePersonPolicy string `json:"disablePersonPolicy"`
 	AnyCriminalProceeding string `json:"anyCriminalProceeding"`
+	LifeApprovalStatus string `json:"lifeApprovalStatus"`
+	HealthApprovalStatus string `json:"healthApprovalStatus"`
+	
 
 }
 
@@ -86,6 +89,8 @@ func (t *HDFC) Init(stub shim.ChaincodeStubInterface, function string, args []st
 		&shim.ColumnDefinition{Name: "politicallyExposed", Type: shim.ColumnDefinition_STRING, Key: false},
 		&shim.ColumnDefinition{Name: "disablePersonPolicy", Type: shim.ColumnDefinition_STRING, Key: false},
 		&shim.ColumnDefinition{Name: "anyCriminalProceeding", Type: shim.ColumnDefinition_STRING, Key: false},
+		&shim.ColumnDefinition{Name: "lifeApprovalStatus", Type: shim.ColumnDefinition_STRING, Key: false},
+		&shim.ColumnDefinition{Name: "healthApprovalStatus", Type: shim.ColumnDefinition_STRING, Key: false},
 	})
 	if err != nil {
 		return nil, errors.New("Failed creating ApplicationTable.")
@@ -183,6 +188,8 @@ func (t *HDFC) UpdateStatus(stub shim.ChaincodeStubInterface, args []string) ([]
 	politicallyExposed := row.Columns[17].GetString_()
 	disablePersonPolicy := row.Columns[18].GetString_()
 	anyCriminalProceeding := row.Columns[19].GetString_()
+	lifeApprovalStatus:=row.Columns[20].GetString_()
+	healthApprovalStatus:=row.Columns[21].GetString_()
 	
 	//Insert the row pertaining to this applicationId with new status
 	_, err = stub.InsertRow(
@@ -208,8 +215,10 @@ func (t *HDFC) UpdateStatus(stub shim.ChaincodeStubInterface, args []string) ([]
 				&shim.Column{Value: &shim.Column_String_{String_: educationalQualification}},
 				&shim.Column{Value: &shim.Column_String_{String_: politicallyExposed}},
 				&shim.Column{Value: &shim.Column_String_{String_: disablePersonPolicy}},
-				&shim.Column{Value: &shim.Column_String_{String_: anyCriminalProceeding}}},
-		})
+				&shim.Column{Value: &shim.Column_String_{String_: anyCriminalProceeding}},
+				&shim.Column{Value: &shim.Column_String_{String_: lifeApprovalStatus}},
+				&shim.Column{Value: &shim.Column_String_{String_: healthApprovalStatus}},
+		}})
 	if err != nil {
 		return nil, errors.New("Failed inserting row.")
 	}
@@ -268,6 +277,8 @@ func (t *HDFC) getApplication(stub shim.ChaincodeStubInterface, args []string) (
 	res2E.PoliticallyExposed = row.Columns[17].GetString_()
 	res2E.DisablePersonPolicy = row.Columns[18].GetString_()
 	res2E.AnyCriminalProceeding = row.Columns[19].GetString_()
+	res2E.LifeApprovalStatus = row.Columns[20].GetString_()
+	res2E.HealthApprovalStatus = row.Columns[21].GetString_()
 	
     mapB, _ := json.Marshal(res2E)
     fmt.Println(string(mapB))
@@ -306,13 +317,138 @@ func (t *HDFC) listAllApplication(stub shim.ChaincodeStubInterface, args []strin
 }
 
 
+func (t *HDFC) getApplicationByPanNumber(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	if len(args) != 1 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 1.")
+	}
+
+	lastPan := args[0]
+	
+	var columns []shim.Column
+
+	rows, err := stub.GetRows("ApplicationTable", columns)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to retrieve row")
+	}
+
+	res2E := Application{}
+	
+	for row := range rows {
+		fetchedPan := row.Columns[14].GetString_()
+		
+		if fetchedPan == lastPan{
+			res2E.ApplicationId = row.Columns[0].GetString_()
+			res2E.Status = row.Columns[1].GetString_()
+			res2E.Title = row.Columns[2].GetString_()
+			res2E.FirstName = row.Columns[3].GetString_()
+			res2E.LastName = row.Columns[4].GetString_()
+			res2E.Gender = row.Columns[5].GetString_()
+			res2E.Dob = row.Columns[6].GetString_()
+			res2E.Age = row.Columns[7].GetString_()
+			res2E.MartialStatus = row.Columns[8].GetString_()
+			res2E.FatherName = row.Columns[9].GetString_()
+			res2E.MotherName = row.Columns[10].GetString_()
+			res2E.Nationality = row.Columns[11].GetString_()
+			res2E.ResidentialStatus = row.Columns[12].GetString_()
+			res2E.PlaceOfBirth = row.Columns[13].GetString_()
+			res2E.PanNumber = row.Columns[14].GetString_()
+			res2E.AadharNumber = row.Columns[15].GetString_()
+			res2E.EducationalQualification = row.Columns[16].GetString_()
+			res2E.PoliticallyExposed = row.Columns[17].GetString_()
+			res2E.DisablePersonPolicy = row.Columns[18].GetString_()
+			res2E.AnyCriminalProceeding = row.Columns[19].GetString_()
+			res2E.LifeApprovalStatus = row.Columns[20].GetString_()
+			res2E.HealthApprovalStatus = row.Columns[21].GetString_()
+			
+			mapB, _ := json.Marshal(res2E)
+			fmt.Println(string(mapB))
+			
+			return mapB, nil			
+		}
+	}
+	
+	return nil, errors.New("There is no application with the specified Pan Number.")
+
+}
+
+
+
+func (t *HDFC) listAllApplicationByStatus(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	if len(args) != 1 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 1.")
+	}
+
+	argStatus := args[0]
+	
+	var columns []shim.Column
+
+	rows, err := stub.GetRows("ApplicationTable", columns)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to retrieve row")
+	}
+
+	res2E:= []*ListApplication{}	
+	
+	for row := range rows {
+		fetchedStatus := row.Columns[1].GetString_()
+		
+		if fetchedStatus == argStatus{
+			newApp:= new(ListApplication)
+			newApp.ApplicationId = row.Columns[0].GetString_()
+			newApp.Status = row.Columns[1].GetString_()
+			res2E=append(res2E,newApp)
+		}
+	}
+	
+	res2F, _ := json.Marshal(res2E)
+    fmt.Println(string(res2F))
+	return res2F, nil
+
+}
+
+
+
+func (t *HDFC) listAllApplicationByLastName(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	if len(args) != 1 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 1.")
+	}
+
+	argLastName := args[0]
+	
+	var columns []shim.Column
+
+	rows, err := stub.GetRows("ApplicationTable", columns)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to retrieve row")
+	}
+
+	res2E:= []*ListApplication{}	
+	
+	for row := range rows {
+		fetchedLastName := row.Columns[4].GetString_()
+		
+		if fetchedLastName == argLastName{
+			newApp:= new(ListApplication)
+			newApp.ApplicationId = row.Columns[0].GetString_()
+			newApp.Status = row.Columns[1].GetString_()
+			res2E=append(res2E,newApp)
+		}
+	}
+	
+	res2F, _ := json.Marshal(res2E)
+    fmt.Println(string(res2F))
+	return res2F, nil
+
+}
+
+
 
 // Invoke invokes the chaincode
 func (t *HDFC) Invoke(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 
 	if function == "submitApplication" {
-		if len(args) != 20 {
-			return nil, fmt.Errorf("Incorrect number of arguments. Expecting 20. Got: %d.", len(args))
+		if len(args) != 22 {
+			return nil, fmt.Errorf("Incorrect number of arguments. Expecting 22. Got: %d.", len(args))
 		}
 
 		applicationId := args[0]
@@ -335,6 +471,8 @@ func (t *HDFC) Invoke(stub shim.ChaincodeStubInterface, function string, args []
 		politicallyExposed := args[17]
 		disablePersonPolicy := args[18]
 		anyCriminalProceeding := args[19]
+		lifeApprovalStatus := args[20]
+		healthApprovalStatus := args[21]
 
 		// Insert a row
 		ok, err := stub.InsertRow("ApplicationTable", shim.Row{
@@ -359,6 +497,8 @@ func (t *HDFC) Invoke(stub shim.ChaincodeStubInterface, function string, args []
 				&shim.Column{Value: &shim.Column_String_{String_: politicallyExposed}},
 				&shim.Column{Value: &shim.Column_String_{String_: disablePersonPolicy}},
 				&shim.Column{Value: &shim.Column_String_{String_: anyCriminalProceeding}},
+				&shim.Column{Value: &shim.Column_String_{String_: lifeApprovalStatus}},
+				&shim.Column{Value: &shim.Column_String_{String_: healthApprovalStatus}},
 			}})
 
 		if err != nil {
@@ -392,6 +532,15 @@ func (t *HDFC) Query(stub shim.ChaincodeStubInterface, function string, args []s
 	}else if function == "getNumApplications" { 
 		t := HDFC{}
 		return t.getNumApplications(stub, args)
+	}else if function == "getApplicationByPanNumber" { 
+		t := HDFC{}
+		return t.getApplicationByPanNumber(stub, args)
+	}else if function == "listAllApplicationByStatus" { 
+		t := HDFC{}
+		return t.listAllApplicationByStatus(stub, args)
+	}else if function == "listAllApplicationByLastName" { 
+		t := HDFC{}
+		return t.listAllApplicationByLastName(stub, args)
 	}
 	
 	return nil, nil
