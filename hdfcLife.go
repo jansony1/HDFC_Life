@@ -452,7 +452,7 @@ func (t *HDFC) UpdateStatusUW(stub shim.ChaincodeStubInterface, args []string) (
 	
 	
 	//getting the role of the user
-	assignerRole, err := stub.ReadCertAttribute("ID")
+	assignerRole, err := stub.ReadCertAttribute("userid")
 	fmt.Printf("Assiger role is %v\n", string(assignerRole))
 
 	if err != nil {
@@ -644,7 +644,7 @@ func (t *HDFC) getApplication(stub shim.ChaincodeStubInterface, args []string) (
     fmt.Println(string(mapB))
 	
 	//getting the role of the user
-	assignerRole, err := stub.ReadCertAttribute("ID")
+	assignerRole, err := stub.ReadCertAttribute("id")
 	fmt.Printf("Assiger role is %v\n", string(assignerRole))
 
 	if err != nil {
@@ -741,7 +741,7 @@ func (t *HDFC) getQuote(stub shim.ChaincodeStubInterface, args []string) ([]byte
 	
 	
 	//getting the role of the user
-	assignerRole, err := stub.ReadCertAttribute("ID")
+	assignerRole, err := stub.ReadCertAttribute("id")
 	fmt.Printf("Assiger role is %v\n", string(assignerRole))
 
 	if err != nil {
@@ -889,7 +889,7 @@ func (t *HDFC) getApplicationByPanNumber(stub shim.ChaincodeStubInterface, args 
 			
 			
 		//getting the role of the user
-		assignerRole, err := stub.ReadCertAttribute("ID")
+		assignerRole, err := stub.ReadCertAttribute("id")
 		fmt.Printf("Assiger role is %v\n", string(assignerRole))
 
 		if err != nil {
@@ -1044,7 +1044,7 @@ if len(args) != 30 {
 		
 		
 		// The metadata will contain the role of the users 
-		assignerRole, err := stub.ReadCertAttribute("ID")
+		assignerRole, err := stub.ReadCertAttribute("id")
 		fmt.Printf("Assiger role is %v\n", string(assignerRole))
 
 		if err != nil {
@@ -1179,7 +1179,7 @@ func (t *HDFC) submitApplication(stub shim.ChaincodeStubInterface, args []string
 		
 		
 		//getting the user role
-		assignerRole, err := stub.ReadCertAttribute("ID")
+		assignerRole, err := stub.ReadCertAttribute("id")
 		fmt.Printf("Assiger role is %v\n", string(assignerRole))
 
 		if err != nil {
