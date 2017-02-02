@@ -480,7 +480,7 @@ func (t *HDFC) getQuote(stub shim.ChaincodeStubInterface, args []string) ([]byte
 //all quote id with overall status(irrespective of the role)
 func (t *HDFC) listAllQuote(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	if len(args) != 1 {
-		return nil, errors.New("Incorrect number of arguments. Expecting 0.")
+		return nil, errors.New("Incorrect number of arguments. Expecting 1.")
 	}
 
 	var columns []shim.Column
@@ -1336,9 +1336,6 @@ func (t *HDFC) Invoke(stub shim.ChaincodeStubInterface, function string, args []
 func (t *HDFC) Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 
 	if function == "getApplication" {
-		if len(args) != 1 {
-			return nil, errors.New("Incorrect number of arguments. Expecting applicationid to query")
-		}
 		t := HDFC{}
 		return t.getApplication(stub, args)		
 	}else if function == "listAllApplication" { 
