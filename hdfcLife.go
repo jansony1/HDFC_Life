@@ -108,6 +108,8 @@ type Quote struct{
 type ListApplication struct{	
 	ApplicationId string `json:"applicationId"`
 	Status string `json:"status"`
+	LifeApprovalStatus string `json:"lifeApprovalStatus"`
+	HealthApprovalStatus string `json:"healthApprovalStatus"`
 }
 
 // ListQuote is for storing retreived Quote list with status
@@ -948,19 +950,38 @@ func (t *HDFC) listAllApplication(stub shim.ChaincodeStubInterface, args []strin
 		return nil, errors.New("Incorrect number of arguments. Expecting 1.")
 	}
 
+	assignerRole := args[0]
+	
 	var columns []shim.Column
 
 	rows, err := stub.GetRows("ApplicationTable", columns)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to retrieve row")
 	}
-
+	
+	
+	// getting the org
+	assignerOrg1, err := stub.GetState(assignerRole)
+	assignerOrg := string(assignerOrg1)
+	
+	
 	res2E:= []*ListApplication{}	
 	
 	for row := range rows {
 		newApp:= new(ListApplication)
 		newApp.ApplicationId = row.Columns[0].GetString_()
 		newApp.Status = row.Columns[1].GetString_()
+		
+		if assignerOrg=="hdfcUW"{
+			newApp.LifeApprovalStatus = row.Columns[20].GetString_()
+			newApp.HealthApprovalStatus = "NA"
+		} else if assignerOrg=="healthUW"{
+			newApp.LifeApprovalStatus = "NA"
+			newApp.HealthApprovalStatus = row.Columns[21].GetString_()
+		} else{
+			newApp.LifeApprovalStatus = row.Columns[20].GetString_()
+			newApp.HealthApprovalStatus = row.Columns[21].GetString_()
+		}
 		res2E=append(res2E,newApp)
 	}
 	
